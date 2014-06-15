@@ -6,4 +6,5 @@ This is made for a university project. The program, written in Java for Android 
 
 ###Contributors
 *Ceccarelli Andrea*
+
 *Castellini Jacopo*
