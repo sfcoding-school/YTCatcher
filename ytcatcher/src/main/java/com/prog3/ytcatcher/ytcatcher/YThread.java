@@ -1,6 +1,9 @@
 package com.prog3.ytcatcher.ytcatcher;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -75,12 +78,21 @@ public class YThread extends Thread {
             }
             url=new URL(result);
             HttpURLConnection c=(HttpURLConnection) url.openConnection();
-            fs=new FileOutputStream(new File(ctx.getFilesDir(),"test.mp4"));
+            c.setRequestProperty("User-Agent","Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.34 Safari/534.24");
+            fs=new FileOutputStream(new File("/storage/sdcard0","test.mp4"));
             is=c.getInputStream();
-            byte[] buffer=new byte[1024];
+            byte[] buffer=new byte[4096];
             int size=0;
             while((size=is.read(buffer))>0)
                 fs.write(buffer,0,size);
+            Looper.prepare();
+            Handler h=new Handler();
+            h.post(new Runnable() {
+                public void run() {
+                    Toast.makeText(ctx, "Video scaricato con successo!", Toast.LENGTH_LONG).show();
+                }
+            });
+            Looper.loop();
         }
         catch(MalformedURLException e) {}
         catch(IOException e) {}

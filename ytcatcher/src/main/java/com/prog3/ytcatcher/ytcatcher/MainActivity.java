@@ -21,7 +21,7 @@ public class MainActivity extends ActionBarActivity {
     public void onClick(View v) {
         Context ctx=this.getApplicationContext();
         String url="http://www.youtube.com/watch?v=Cg-wn1NuL5w";
-        Pattern pt=Pattern.compile("(http://)?(www\\.)?youtube\\.com/watch\\?v=[a-zA-Z0-9_\\-]{11}");
+        Pattern pt=Pattern.compile("(http://|https://)?(www\\.)?((m\\.|it\\.)?youtube\\.com|youtu\\.be)/watch\\?v=[\\w\\-]{11}(&[\\w]+=[\\w\\-]+)*");
         if(pt.matcher(url).matches()) {
             String id=url.split("v=")[1];
             Toast.makeText(ctx, "Avvio del download...", Toast.LENGTH_SHORT).show();
