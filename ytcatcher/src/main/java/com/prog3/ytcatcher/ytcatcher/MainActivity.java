@@ -1,5 +1,7 @@
 package com.prog3.ytcatcher.ytcatcher;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -7,28 +9,35 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
 import java.util.regex.Pattern;
 
 
 public class MainActivity extends ActionBarActivity {
 
+    private Context ctx;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ctx = this.getApplicationContext();
     }
 
     public void onClick(View v) {
-        Context ctx=this.getApplicationContext();
-        String url="http://www.youtube.com/watch?v=Cg-wn1NuL5w";
-        Pattern pt=Pattern.compile("(http://|https://)?(www\\.)?((m\\.|it\\.)?youtube\\.com|youtu\\.be)/watch\\?v=[\\w\\-]{11}(&[\\w]+=[\\w\\-]+)*");
-        if(pt.matcher(url).matches()) {
-            String id=url.split("v=")[1];
+        ClipboardManager cbm = (ClipboardManager) getSystemService(ctx.CLIPBOARD_SERVICE);
+        ClipData clip = cbm.getPrimaryClip();
+        ClipData.Item it = clip.getItemAt(0);
+        String url = it.coerceToText(ctx).toString();
+        //url="http://www.youtube.com/watch?v=Cg-wn1NuL5w";
+        Pattern pt = Pattern.compile("(http://|https://)?(www\\.)?((m\\.|it\\.)?youtube\\.com|youtu\\.be)/watch\\?v=[\\w\\-]{11}");
+        if (pt.matcher(url).matches()) {
+            String id = url.split("v=")[1];
             Toast.makeText(ctx, "Avvio del download...", Toast.LENGTH_SHORT).show();
-            YThread t = new YThread("http://www.youtube.com/get_video_info?video_id="+id,ctx);
-            t.start();
+            YTAsyncTask t = new YTAsyncTask(ctx);
+            t.execute("http://www.youtube.com/get_video_info?video_id=" + id);
         } else
-            Toast.makeText(ctx,"URL non corretto...",Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, "URL non corretto...", Toast.LENGTH_SHORT).show();
     }
 
     @Override
