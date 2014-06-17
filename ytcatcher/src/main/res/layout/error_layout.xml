@@ -24,8 +24,8 @@
             android:id="@+id/sorryView"
             android:layout_gravity="center_horizontal"
             android:layout_weight="0.07"
-            android:layout_marginTop="150dp"
-            android:textSize="60dp" />
+            android:layout_marginTop="100dp"
+            android:textSize="50dp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -34,7 +34,10 @@
             android:text="@string/lb_error"
             android:id="@+id/errorView"
             android:layout_weight="0.05"
-            android:textSize="20dp" />
+            android:textSize="20dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="2dp" />
     </LinearLayout>
 
 </RelativeLayout>

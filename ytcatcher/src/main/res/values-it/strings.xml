@@ -4,7 +4,7 @@
     <string name="app_name">YTCatcher</string>
     <string name="lb_sorry">Spiacenti! :(</string>
     <string name="lb_error">Il link che stai cercando di aprire non viene da YouTube...</string>
-    <string name="bt_down">Scarica!</string>
+    <string name="pd_desc">Sto scaricando il video...</string>
     <string name="action_settings">Impostazioni</string>
 
 </resources>

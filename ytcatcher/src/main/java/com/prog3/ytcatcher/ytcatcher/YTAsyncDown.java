@@ -1,7 +1,9 @@
 package com.prog3.ytcatcher.ytcatcher;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.widget.Toast;
 
 import java.io.File;
@@ -17,13 +19,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class YTAsyncDown extends AsyncTask<String, Byte, Void> {
+public class YTAsyncDown extends AsyncTask<String, String, Void> {
 
     final private Context context;
+    final private ProgressDialog pd;
     final private Map<String, Integer> fmt = new HashMap<String, Integer>();
 
     public YTAsyncDown(Context context) {
         this.context = context;
+        pd = new ProgressDialog(context);
         fmt.put("Low Quality, 240p, FLV, 400x240", 5);
         fmt.put("Low Quality, 144p, 3GP, 0x0", 17);
         fmt.put("Medium Quality, 360p, MP4, 480x360", 18);
@@ -41,6 +45,16 @@ public class YTAsyncDown extends AsyncTask<String, Byte, Void> {
         fmt.put("High Quality 3D, 720p, MP4, 1280x720", 84);
         fmt.put("Medium Quality 3D, 360p, WebM, 640x360", 100);
         fmt.put("High Quality 3D, 720p, WebM, 1280x720", 102);
+    }
+
+    protected void onPreExecute() {
+        super.onPreExecute();
+        pd.setTitle(context.getString(R.string.pd_desc));
+        pd.setCancelable(false);
+        //pd.setMax(100);
+        pd.setIndeterminate(false);
+        pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        pd.show();
     }
 
     protected Void doInBackground(String... video) {
@@ -81,6 +95,8 @@ public class YTAsyncDown extends AsyncTask<String, Byte, Void> {
             URL url = new URL(result);
             HttpURLConnection c = (HttpURLConnection) url.openConnection();
             c.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.34 Safari/534.24");
+            int total = c.getContentLength() / 1024;
+            pd.setMax(total);
             String ext = "";
             switch (l) {
                 case 5:
@@ -102,13 +118,22 @@ public class YTAsyncDown extends AsyncTask<String, Byte, Void> {
                     break;
                 default:
                     ext = ".webm";
+                    break;
             }
-            fs = new FileOutputStream(new File("/storage/sdcard0/DCIM", video[2] + ext));
+            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "YTCatcher");
+            if (!dir.exists())
+                dir.mkdirs();
+            fs = new FileOutputStream(new File(dir, video[2].concat(ext)));
             is = c.getInputStream();
             byte[] buffer = new byte[4096];
             int size = 0;
-            while ((size = is.read(buffer)) > 0)
+            int downloaded = 0;
+            while ((size = is.read(buffer)) > 0) {
                 fs.write(buffer, 0, size);
+                downloaded += size;
+                publishProgress("" + (int) (downloaded / total));
+            }
+            fs.flush();
         } catch (MalformedURLException e) {
         } catch (IOException e) {
         } finally {
@@ -123,11 +148,13 @@ public class YTAsyncDown extends AsyncTask<String, Byte, Void> {
         }
     }
 
-    protected void onProgressUpdate(Byte... progress) {
-        super.onProgressUpdate(progress);
+    protected void onProgressUpdate(String... progress) {
+        super.onProgressUpdate(progress[0]);
+        pd.setProgress(Integer.parseInt(progress[0]));
     }
 
     protected void onPostExecute(Void args) {
+        pd.dismiss();
         Toast.makeText(context, "Video scaricato con successo!", Toast.LENGTH_LONG).show();
     }
 }
