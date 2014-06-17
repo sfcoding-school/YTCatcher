@@ -11,4 +11,4 @@ The program check the clipboard and parse it with a Regex. If it matches, an Asy
 When the user choose the desired format, a new AsyncTask is launched: this time it open an input stream directly with the desired video file and, passing through an output stream, saves it on a file.
 
 ###Author
-*Castellini Jacopo
+*Castellini Jacopo*
