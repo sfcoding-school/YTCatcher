@@ -2,57 +2,55 @@ package com.prog3.ytcatcher.ytcatcher;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
-public class YTAsyncTask extends AsyncTask<String, Byte, Void> {
+public class YTAsyncDown extends AsyncTask<String, Byte, Void> {
 
     final private Context context;
+    final private Map<String, Integer> fmt = new HashMap<String, Integer>();
 
-    public YTAsyncTask(Context context) {
+    public YTAsyncDown(Context context) {
         this.context = context;
+        fmt.put("Low Quality, 240p, FLV, 400x240", 5);
+        fmt.put("Low Quality, 144p, 3GP, 0x0", 17);
+        fmt.put("Medium Quality, 360p, MP4, 480x360", 18);
+        fmt.put("High Quality, 720p, MP4, 1280x720", 22);
+        fmt.put("Medium Quality, 360p, FLV, 640x360", 34);
+        fmt.put("Standard Definition, 480p, FLV, 854x480", 35);
+        fmt.put("Low Quality, 240p, 3GP, 0x0", 36);
+        fmt.put("Full High Quality, 1080p, MP4, 1920x1080", 37);
+        fmt.put("Original Definition, MP4, 4096x3072", 38);
+        fmt.put("Medium Quality, 360p, WebM, 640x360", 43);
+        fmt.put("Standard Definition, 480p, WebM, 854x480", 44);
+        fmt.put("High Quality, 720p, WebM, 1280x720", 45);
+        fmt.put("Full High Quality, 1080p, WebM, 1280x720", 46);
+        fmt.put("Medium Quality 3D, 360p, MP4, 640x360", 82);
+        fmt.put("High Quality 3D, 720p, MP4, 1280x720", 84);
+        fmt.put("Medium Quality 3D, 360p, WebM, 640x360", 100);
+        fmt.put("High Quality 3D, 720p, WebM, 1280x720", 102);
     }
 
     protected Void doInBackground(String... video) {
-        BufferedReader br = null;
         FileOutputStream fs = null;
         InputStream is = null;
         try {
-            URL url = new URL(video[0]);
-            br = new BufferedReader(new InputStreamReader(url.openStream()));
-            String line;
-            StringBuilder sb = new StringBuilder();
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-            line = sb.toString();
-            int begin = line.indexOf("title=");
-            int end = line.indexOf("&", begin + 6);
-            if (end == -1)
-                end = line.indexOf("\"", begin + 6);
-            String title = URLDecoder.decode(line.substring(begin + 6, end), "UTF-8");
-            title = title.replaceAll("\\+", " ");
-            begin = line.indexOf("url_encoded_fmt_stream_map=");
-            end = line.indexOf("&", begin + 27);
-            if (end == -1)
-                end = line.indexOf("\"", begin + 27);
-            String obj = URLDecoder.decode(line.substring(begin + 27, end), "UTF-8");
-            obj = obj.replaceAll("\\\\u0026", "&");
-            begin = 0;
-            end = obj.indexOf(",");
+            int l = fmt.get(video[1]);
+            String obj = video[0];
+            int begin = 0;
+            int end = obj.indexOf(",");
             ArrayList<String> tags = new ArrayList<String>();
             while (end != -1) {
                 tags.add(obj.substring(begin, end));
@@ -70,23 +68,42 @@ public class YTAsyncTask extends AsyncTask<String, Byte, Void> {
                     if (end == -1)
                         end = temp.length();
                     int f = Integer.parseInt(temp.substring(begin + 5, end));
-                    if (f == 18) {
+                    if (f == l) {
                         begin = temp.indexOf("url=");
-                        if (begin != -1) {
-                            end = temp.indexOf("&", begin + 4);
-                            if (end == -1)
-                                end = temp.length();
-                            result = URLDecoder.decode(temp.substring(begin + 4, end), "UTF-8");
-                            break;
-                        }
+                        end = temp.indexOf("&", begin + 4);
+                        if (end == -1)
+                            end = temp.length();
+                        result = URLDecoder.decode(temp.substring(begin + 4, end), "UTF-8");
+                        break;
                     }
                 }
             }
-            url = new URL(result);
-            Log.i("My", title);
+            URL url = new URL(result);
             HttpURLConnection c = (HttpURLConnection) url.openConnection();
             c.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.34 Safari/534.24");
-            fs = new FileOutputStream(new File("/storage/sdcard0", title + ".mp4"));
+            String ext = "";
+            switch (l) {
+                case 5:
+                case 34:
+                case 35:
+                    ext = ".flv";
+                    break;
+                case 17:
+                case 36:
+                    ext = ".3gp";
+                    break;
+                case 18:
+                case 22:
+                case 37:
+                case 38:
+                case 82:
+                case 84:
+                    ext = ".mp4";
+                    break;
+                default:
+                    ext = ".webm";
+            }
+            fs = new FileOutputStream(new File("/storage/sdcard0/DCIM", video[2] + ext));
             is = c.getInputStream();
             byte[] buffer = new byte[4096];
             int size = 0;
@@ -96,8 +113,6 @@ public class YTAsyncTask extends AsyncTask<String, Byte, Void> {
         } catch (IOException e) {
         } finally {
             try {
-                if (br != null)
-                    br.close();
                 if (is != null)
                     is.close();
                 if (fs != null)

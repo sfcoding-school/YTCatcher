@@ -7,8 +7,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.regex.Pattern;
 
@@ -16,16 +16,18 @@ import java.util.regex.Pattern;
 public class MainActivity extends ActionBarActivity {
 
     private Context ctx;
+    private ClipboardManager cbm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.error_layout);
         ctx = this.getApplicationContext();
+        cbm = (ClipboardManager) getSystemService(ctx.CLIPBOARD_SERVICE);
     }
 
-    public void onClick(View v) {
-        ClipboardManager cbm = (ClipboardManager) getSystemService(ctx.CLIPBOARD_SERVICE);
+    protected void onStart() {
+        super.onStart();
         ClipData clip = cbm.getPrimaryClip();
         ClipData.Item it = clip.getItemAt(0);
         String url = it.coerceToText(ctx).toString();
@@ -33,11 +35,10 @@ public class MainActivity extends ActionBarActivity {
         Pattern pt = Pattern.compile("(http://|https://)?(www\\.)?((m\\.|it\\.)?youtube\\.com|youtu\\.be)/watch\\?v=[\\w\\-]{11}");
         if (pt.matcher(url).matches()) {
             String id = url.split("v=")[1];
-            Toast.makeText(ctx, "Avvio del download...", Toast.LENGTH_SHORT).show();
-            YTAsyncTask t = new YTAsyncTask(ctx);
+            setContentView(R.layout.choice_layout);
+            YTAsyncGet t = new YTAsyncGet(getApplicationContext(), (TextView) findViewById(R.id.titleView), (ListView) findViewById(R.id.listView));
             t.execute("http://www.youtube.com/get_video_info?video_id=" + id);
-        } else
-            Toast.makeText(ctx, "URL non corretto...", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

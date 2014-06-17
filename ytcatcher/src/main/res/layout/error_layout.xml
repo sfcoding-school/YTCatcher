@@ -13,26 +13,28 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:weightSum="1">
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/editText"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="3dp"
-            android:layout_marginLeft="1dp"
-            android:layout_marginRight="1dp" />
-
-        <Button
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/bt_text"
-            android:id="@+id/button"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/lb_sorry"
+            android:id="@+id/sorryView"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
-            android:onClick="onClick" />
+            android:layout_weight="0.07"
+            android:layout_marginTop="150dp"
+            android:textSize="60dp" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/lb_error"
+            android:id="@+id/errorView"
+            android:layout_weight="0.05"
+            android:textSize="20dp" />
     </LinearLayout>
 
 </RelativeLayout>

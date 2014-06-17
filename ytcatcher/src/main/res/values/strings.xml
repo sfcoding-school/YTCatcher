@@ -2,7 +2,9 @@
 <resources>
 
     <string name="app_name">YTCatcher</string>
-    <string name="bt_text">Scarica!</string>
+    <string name="lb_sorry">Sorry! :(</string>
+    <string name="lb_error">The link you\'re trying to open is not a YouTube one...</string>
+    <string name="bt_down">Download!</string>
     <string name="action_settings">Settings</string>
 
 </resources>
