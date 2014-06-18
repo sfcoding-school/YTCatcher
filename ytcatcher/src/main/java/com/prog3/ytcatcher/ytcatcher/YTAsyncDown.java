@@ -2,6 +2,8 @@ package com.prog3.ytcatcher.ytcatcher;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.widget.Toast;
@@ -51,7 +53,6 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
         super.onPreExecute();
         pd.setTitle(context.getString(R.string.pd_desc));
         pd.setCancelable(false);
-        //pd.setMax(100);
         pd.setIndeterminate(false);
         pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         pd.show();
@@ -129,10 +130,11 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
             int downloaded = 0;
             while ((size = is.read(buffer)) > 0) {
                 fs.write(buffer, 0, size);
-                downloaded += size / 1024;
-                publishProgress("" + downloaded);
+                downloaded += size;
+                publishProgress("" + (downloaded / 1024));
             }
             fs.flush();
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(dir, video[2].concat(ext)))));
         } catch (MalformedURLException e) {
         } catch (IOException e) {
         } finally {
