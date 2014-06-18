@@ -21,23 +21,19 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/lb_sorry"
-            android:id="@+id/sorryView"
             android:layout_gravity="center_horizontal"
             android:layout_weight="0.07"
             android:layout_marginTop="100dp"
-            android:textSize="50dp" />
+            android:textSize="50sp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/lb_error"
-            android:id="@+id/errorView"
             android:layout_weight="0.05"
-            android:textSize="20dp"
-            android:layout_marginLeft="2dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="2dp" />
+            android:textSize="20sp"
+            android:layout_marginTop="5dp" />
     </LinearLayout>
 
 </RelativeLayout>

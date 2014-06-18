@@ -95,8 +95,7 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
             URL url = new URL(result);
             HttpURLConnection c = (HttpURLConnection) url.openConnection();
             c.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.34 Safari/534.24");
-            int total = c.getContentLength() / 1024;
-            pd.setMax(total);
+            pd.setMax(c.getContentLength() / 1024);
             String ext = "";
             switch (l) {
                 case 5:
@@ -130,8 +129,8 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
             int downloaded = 0;
             while ((size = is.read(buffer)) > 0) {
                 fs.write(buffer, 0, size);
-                downloaded += size;
-                publishProgress("" + (int) (downloaded / total));
+                downloaded += size / 1024;
+                publishProgress("" + downloaded);
             }
             fs.flush();
         } catch (MalformedURLException e) {
