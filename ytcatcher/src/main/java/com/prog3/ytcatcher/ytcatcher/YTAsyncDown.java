@@ -89,12 +89,21 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
                         if (end == -1)
                             end = temp.length();
                         result = URLDecoder.decode(temp.substring(begin + 4, end), "UTF-8");
-                        begin = temp.indexOf("s=");
+                        begin = temp.indexOf("sig=");
                         if (begin != -1) {
                             end = temp.indexOf("&", begin + 2);
                             if (end == -1)
                                 end = temp.length();
-                            result = result.concat("&signature=" + temp.substring(begin + 2, end));
+                            result = result.concat("&signature=" + temp.substring(begin + 4, end));
+                        } else {
+                            begin = temp.indexOf("s=");
+                            if (begin != -1) {
+                                end = temp.indexOf("&", begin + 2);
+                                if (end == -1)
+                                    end = temp.length();
+                                String sig = dechiper(temp.substring(begin + 2, end));
+                                result = result.concat("&signature=" + sig);
+                            }
                         }
                         break;
                     }
@@ -103,6 +112,7 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
             URL url = new URL(result);
             HttpURLConnection c = (HttpURLConnection) url.openConnection();
             c.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36");
+            c.connect();
             pd.setMax(c.getContentLength() / 1024);
             String ext = "";
             switch (l) {
@@ -139,7 +149,8 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
             title = title.replaceAll("|", "");
             title = title.replaceAll("\\?", "");
             title = title.replaceAll("\\*", "");
-            fs = new FileOutputStream(new File(dir, title.concat(ext)));
+            title = title.concat(ext);
+            fs = new FileOutputStream(new File(dir, title));
             is = c.getInputStream();
             byte[] buffer = new byte[4096];
             int size = 0;
@@ -150,7 +161,7 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
                 publishProgress("" + (downloaded / 1024));
             }
             fs.flush();
-            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(dir, video[2].concat(ext)))));
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(dir, title))));
         } catch (MalformedURLException e) {
         } catch (IOException e) {
         } finally {
@@ -163,6 +174,21 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
             }
             return null;
         }
+    }
+
+    private String dechiper(String s) {
+        s = s.substring(2, s.length());
+        s = new StringBuilder(s).reverse().toString();
+        int l = s.length();
+        String c = s.substring(0, 1);
+        int i = 39 % l;
+        s = s.substring(i, i + 1).concat(s.substring(1, l));
+        s = s.substring(0, 39).concat(c.concat(s.substring(40, l)));
+        c = s.substring(0, 1);
+        i = 43 % l;
+        s = s.substring(i, i + 1).concat(s.substring(1, l));
+        s = s.substring(0, 43).concat(c.concat(s.substring(44, l)));
+        return s;
     }
 
     protected void onProgressUpdate(String... progress) {

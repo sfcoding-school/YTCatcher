@@ -58,6 +58,7 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
             URL url = new URL(video[0]);
             HttpURLConnection c = (HttpURLConnection) url.openConnection();
             c.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36");
+            c.connect();
             br = new BufferedReader(new InputStreamReader(c.getInputStream()));
             String line;
             StringBuilder sb = new StringBuilder();

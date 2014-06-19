@@ -36,7 +36,8 @@ public class MainActivity extends ActionBarActivity {
             }
             Pattern pt = Pattern.compile("(http://|https://)?(www\\.)?(((m\\.)?youtube\\.com/watch\\?v=)|youtu\\.be/)[\\w\\-]{11}");
             if (pt.matcher(url).matches()) {
-                String id = url.substring(url.length() - 11, url.length());
+                int len = url.length();
+                String id = url.substring(len - 11, len);
                 setContentView(R.layout.choice_layout);
                 YTAsyncGet t = new YTAsyncGet(this, (TextView) findViewById(R.id.titleView), (ListView) findViewById(R.id.listView));
                 t.execute("http://www.youtube.com/get_video_info?video_id=" + id);
