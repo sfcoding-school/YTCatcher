@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -24,9 +25,9 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
     final private Context context;
     final private TextView tv;
     final private ListView lv;
+    final private Map<Integer, String> fmt = new HashMap<Integer, String>();
     private String title, obj;
     private ArrayList<String> choice;
-    final private Map<Integer, String> fmt = new HashMap<Integer, String>();
 
     public YTAsyncGet(Context context, TextView tv, ListView lv) {
         this.context = context;
@@ -55,7 +56,9 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
         BufferedReader br = null;
         try {
             URL url = new URL(video[0]);
-            br = new BufferedReader(new InputStreamReader(url.openStream()));
+            HttpURLConnection c = (HttpURLConnection) url.openConnection();
+            c.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36");
+            br = new BufferedReader(new InputStreamReader(c.getInputStream()));
             String line;
             StringBuilder sb = new StringBuilder();
             while ((line = br.readLine()) != null) {

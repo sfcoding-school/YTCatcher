@@ -89,13 +89,20 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
                         if (end == -1)
                             end = temp.length();
                         result = URLDecoder.decode(temp.substring(begin + 4, end), "UTF-8");
+                        begin = temp.indexOf("s=");
+                        if (begin != -1) {
+                            end = temp.indexOf("&", begin + 2);
+                            if (end == -1)
+                                end = temp.length();
+                            result = result.concat("&signature=" + temp.substring(begin + 2, end));
+                        }
                         break;
                     }
                 }
             }
             URL url = new URL(result);
             HttpURLConnection c = (HttpURLConnection) url.openConnection();
-            c.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.34 Safari/534.24");
+            c.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36");
             pd.setMax(c.getContentLength() / 1024);
             String ext = "";
             switch (l) {
@@ -123,7 +130,16 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
             File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "YTCatcher");
             if (!dir.exists())
                 dir.mkdirs();
-            fs = new FileOutputStream(new File(dir, video[2].concat(ext)));
+            String title = video[2].replaceAll("\"", "");
+            title = title.replaceAll("<", "");
+            title = title.replaceAll(">", "");
+            title = title.replaceAll(":", "");
+            title = title.replaceAll("/", "");
+            title = title.replaceAll("\\\\", "");
+            title = title.replaceAll("|", "");
+            title = title.replaceAll("\\?", "");
+            title = title.replaceAll("\\*", "");
+            fs = new FileOutputStream(new File(dir, title.concat(ext)));
             is = c.getInputStream();
             byte[] buffer = new byte[4096];
             int size = 0;
