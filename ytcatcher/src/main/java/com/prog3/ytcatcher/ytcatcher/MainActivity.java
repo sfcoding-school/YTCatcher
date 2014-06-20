@@ -40,7 +40,7 @@ public class MainActivity extends ActionBarActivity {
                 String id = url.substring(len - 11, len);
                 setContentView(R.layout.choice_layout);
                 YTAsyncGet t = new YTAsyncGet(this, (TextView) findViewById(R.id.titleView), (ListView) findViewById(R.id.listView));
-                t.execute("http://www.youtube.com/get_video_info?video_id=" + id);
+                t.execute("http://www.youtube.com/get_video_info?video_id=".concat(id));
             }
         } else {
             TextView tv = (TextView) findViewById(R.id.errorView);

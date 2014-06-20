@@ -31,22 +31,16 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
         this.context = context;
         pd = new ProgressDialog(context);
         fmt.put("Low Quality, 240p, FLV, 400x240", 5);
-        fmt.put("Low Quality, 144p, 3GP, 0x0", 17);
+        fmt.put("Low Quality, 144p, 3GP, 176x144", 17);
         fmt.put("Medium Quality, 360p, MP4, 480x360", 18);
         fmt.put("High Quality, 720p, MP4, 1280x720", 22);
-        fmt.put("Medium Quality, 360p, FLV, 640x360", 34);
-        fmt.put("Standard Definition, 480p, FLV, 854x480", 35);
-        fmt.put("Low Quality, 240p, 3GP, 0x0", 36);
-        fmt.put("Full High Quality, 1080p, MP4, 1920x1080", 37);
-        fmt.put("Original Definition, MP4, 4096x3072", 38);
+        fmt.put("Low Quality, 240p, 3GP, 400x240", 36);
         fmt.put("Medium Quality, 360p, WebM, 640x360", 43);
-        fmt.put("Standard Definition, 480p, WebM, 854x480", 44);
-        fmt.put("High Quality, 720p, WebM, 1280x720", 45);
-        fmt.put("Full High Quality, 1080p, WebM, 1280x720", 46);
         fmt.put("Medium Quality 3D, 360p, MP4, 640x360", 82);
+        fmt.put("Low Quality 3D, 240p, MP4, 400x240", 83);
         fmt.put("High Quality 3D, 720p, MP4, 1280x720", 84);
+        fmt.put("High Quality 3D, 1080p, MP4, 1920x1080", 85);
         fmt.put("Medium Quality 3D, 360p, WebM, 640x360", 100);
-        fmt.put("High Quality 3D, 720p, WebM, 1280x720", 102);
     }
 
     protected void onPreExecute() {
@@ -61,6 +55,7 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
     protected Void doInBackground(String... video) {
         FileOutputStream fs = null;
         InputStream is = null;
+        HttpURLConnection c = null;
         try {
             int l = fmt.get(video[1]);
             String obj = video[0];
@@ -89,30 +84,21 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
                         if (end == -1)
                             end = temp.length();
                         result = URLDecoder.decode(temp.substring(begin + 4, end), "UTF-8");
-                        begin = temp.indexOf("sig=");
+                        begin = temp.indexOf("s=");
                         if (begin != -1) {
                             end = temp.indexOf("&", begin + 2);
                             if (end == -1)
                                 end = temp.length();
-                            result = result.concat("&signature=" + temp.substring(begin + 4, end));
-                        } else {
-                            begin = temp.indexOf("s=");
-                            if (begin != -1) {
-                                end = temp.indexOf("&", begin + 2);
-                                if (end == -1)
-                                    end = temp.length();
-                                String sig = dechiper(temp.substring(begin + 2, end));
-                                result = result.concat("&signature=" + sig);
-                            }
+                            String sig = dechiper(temp.substring(begin + 2, end));
+                            result = result.concat("&signature=" + sig);
                         }
                         break;
                     }
                 }
             }
             URL url = new URL(result);
-            HttpURLConnection c = (HttpURLConnection) url.openConnection();
-            c.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36");
-            c.connect();
+            c = (HttpURLConnection) url.openConnection();
+            c.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0");
             pd.setMax(c.getContentLength() / 1024);
             String ext = "";
             switch (l) {
@@ -170,6 +156,8 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
                     is.close();
                 if (fs != null)
                     fs.close();
+                if (c != null)
+                    c.disconnect();
             } catch (IOException e) {
             }
             return null;

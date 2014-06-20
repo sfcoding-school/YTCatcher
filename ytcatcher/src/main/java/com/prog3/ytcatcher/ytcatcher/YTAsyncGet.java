@@ -34,31 +34,26 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
         this.tv = tv;
         this.lv = lv;
         fmt.put(5, "Low Quality, 240p, FLV, 400x240");
-        fmt.put(17, "Low Quality, 144p, 3GP, 0x0");
+        fmt.put(17, "Low Quality, 144p, 3GP, 176x144");
         fmt.put(18, "Medium Quality, 360p, MP4, 480x360");
         fmt.put(22, "High Quality, 720p, MP4, 1280x720");
-        fmt.put(34, "Medium Quality, 360p, FLV, 640x360");
-        fmt.put(35, "Standard Definition, 480p, FLV, 854x480");
-        fmt.put(36, "Low Quality, 240p, 3GP, 0x0");
-        fmt.put(37, "Full High Quality, 1080p, MP4, 1920x1080");
-        fmt.put(38, "Original Definition, MP4, 4096x3072");
+        fmt.put(36, "Low Quality, 240p, 3GP, 400x240");
         fmt.put(43, "Medium Quality, 360p, WebM, 640x360");
-        fmt.put(44, "Standard Definition, 480p, WebM, 854x480");
-        fmt.put(45, "High Quality, 720p, WebM, 1280x720");
-        fmt.put(46, "Full High Quality, 1080p, WebM, 1280x720");
         fmt.put(82, "Medium Quality 3D, 360p, MP4, 640x360");
+        fmt.put(83, "Low Quality 3D, 240p, MP4, 400x240");
         fmt.put(84, "High Quality 3D, 720p, MP4, 1280x720");
+        fmt.put(85, "High Quality 3D, 1080p, MP4, 1920x1080");
         fmt.put(100, "Medium Quality 3D, 360p, WebM, 640x360");
-        fmt.put(102, "High Quality 3D, 720p, WebM, 1280x720");
+
     }
 
     protected Void doInBackground(String... video) {
         BufferedReader br = null;
+        HttpURLConnection c = null;
         try {
             URL url = new URL(video[0]);
-            HttpURLConnection c = (HttpURLConnection) url.openConnection();
-            c.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36");
-            c.connect();
+            c = (HttpURLConnection) url.openConnection();
+            c.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0");
             br = new BufferedReader(new InputStreamReader(c.getInputStream()));
             String line;
             StringBuilder sb = new StringBuilder();
@@ -106,6 +101,8 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
             try {
                 if (br != null)
                     br.close();
+                if (c != null)
+                    c.disconnect();
             } catch (IOException e) {
             }
             return null;
