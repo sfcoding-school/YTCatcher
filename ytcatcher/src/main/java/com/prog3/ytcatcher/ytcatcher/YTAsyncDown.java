@@ -26,6 +26,7 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
     final private Context context;
     final private ProgressDialog pd;
     final private Map<String, Integer> fmt = new HashMap<String, Integer>();
+    boolean copyrighted, complete;
 
     public YTAsyncDown(Context context) {
         this.context = context;
@@ -86,12 +87,10 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
                         result = URLDecoder.decode(temp.substring(begin + 4, end), "UTF-8");
                         begin = temp.indexOf("s=");
                         if (begin != -1) {
-                            end = temp.indexOf("&", begin + 2);
-                            if (end == -1)
-                                end = temp.length();
-                            String sig = dechiper(temp.substring(begin + 2, end));
-                            result = result.concat("&signature=" + sig);
-                        }
+                            copyrighted = true;
+                            return null;
+                        } else
+                            copyrighted = false;
                         break;
                     }
                 }
@@ -136,6 +135,7 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
             title = title.replaceAll("\\?", "");
             title = title.replaceAll("\\*", "");
             title = title.concat(ext);
+            complete = false;
             fs = new FileOutputStream(new File(dir, title));
             is = c.getInputStream();
             byte[] buffer = new byte[4096];
@@ -147,6 +147,7 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
                 publishProgress("" + (downloaded / 1024));
             }
             fs.flush();
+            complete = true;
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(dir, title))));
         } catch (MalformedURLException e) {
         } catch (IOException e) {
@@ -164,21 +165,6 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
         }
     }
 
-    private String dechiper(String s) {
-        s = s.substring(2, s.length());
-        s = new StringBuilder(s).reverse().toString();
-        int l = s.length();
-        String c = s.substring(0, 1);
-        int i = 39 % l;
-        s = s.substring(i, i + 1).concat(s.substring(1, l));
-        s = s.substring(0, 39).concat(c.concat(s.substring(40, l)));
-        c = s.substring(0, 1);
-        i = 43 % l;
-        s = s.substring(i, i + 1).concat(s.substring(1, l));
-        s = s.substring(0, 43).concat(c.concat(s.substring(44, l)));
-        return s;
-    }
-
     protected void onProgressUpdate(String... progress) {
         super.onProgressUpdate(progress[0]);
         pd.setProgress(Integer.parseInt(progress[0]));
@@ -186,6 +172,11 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
 
     protected void onPostExecute(Void args) {
         pd.dismiss();
-        Toast.makeText(context, "Video scaricato con successo!", Toast.LENGTH_LONG).show();
+        if (copyrighted)
+            Toast.makeText(context, context.getString(R.string.copyright), Toast.LENGTH_LONG).show();
+        else if (complete)
+            Toast.makeText(context, context.getString(R.string.success), Toast.LENGTH_LONG).show();
+        else
+            Toast.makeText(context, context.getString(R.string.unsuccess), Toast.LENGTH_LONG).show();
     }
 }

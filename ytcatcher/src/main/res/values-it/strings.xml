@@ -6,6 +6,9 @@
     <string name="lb_error">Il link che stai cercando di aprire non viene da YouTube...</string>
     <string name="net_error">Non sei connesso ad Internet.</string>
     <string name="pd_desc">Sto scaricando il video...</string>
+    <string name="success">Video scaricato con successo!</string>
+    <string name="unsuccess">Download fallito...</string>
+    <string name="copyright">Il video che stai cercando di scaricare è protetto da copyright...</string>
     <string name="action_settings">Impostazioni</string>
 
 </resources>
