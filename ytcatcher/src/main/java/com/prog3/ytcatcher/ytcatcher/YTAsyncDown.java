@@ -88,7 +88,7 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
                         begin = temp.indexOf("s=");
                         if (begin != -1) {
                             copyrighted = true;
-                            return null;
+                            throw new Exception();
                         } else
                             copyrighted = false;
                         break;
@@ -151,6 +151,7 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(dir, title))));
         } catch (MalformedURLException e) {
         } catch (IOException e) {
+        } catch (Exception e) {
         } finally {
             try {
                 if (is != null)
