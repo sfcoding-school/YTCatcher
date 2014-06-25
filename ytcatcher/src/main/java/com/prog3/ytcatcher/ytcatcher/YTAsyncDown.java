@@ -89,6 +89,11 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
                         if (begin != -1) {
                             copyrighted = true;
                             throw new Exception();
+                            /*end = temp.indexOf("&", begin + 2);
+                            if (end == -1)
+                                end = temp.length();
+                            String sig = decipher(temp.substring(begin + 2, end));
+                            result = result.concat("&signature=".concat(sig));*/
                         } else
                             copyrighted = false;
                         break;
@@ -164,6 +169,20 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
             }
             return null;
         }
+    }
+
+    private String decipher(String s) {
+        s = new StringBuilder(s).reverse().toString();
+        s = s.substring(1);
+        s = swap(s, 52);
+        return s;
+    }
+
+    private String swap(String s, int b) {
+        int l = b % s.length();
+        String c = s.substring(0, 1);
+        s = s.substring(l, l + 1).concat(s.substring(1, b).concat(c.concat(s.substring(b + 1))));
+        return s;
     }
 
     protected void onProgressUpdate(String... progress) {
