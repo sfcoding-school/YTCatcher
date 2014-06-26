@@ -1,15 +1,20 @@
 package com.prog3.ytcatcher.ytcatcher;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -25,14 +30,17 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
     final private Context context;
     final private TextView tv;
     final private ListView lv;
+    final private ImageView iv;
     final private Map<Integer, String> fmt = new HashMap<Integer, String>();
     private String title, obj;
     private ArrayList<String> choice;
+    private Bitmap bmap;
 
-    public YTAsyncGet(Context context, TextView tv, ListView lv) {
+    public YTAsyncGet(Context context, TextView tv, ListView lv, ImageView iv) {
         this.context = context;
         this.tv = tv;
         this.lv = lv;
+        this.iv = iv;
         fmt.put(5, "Low Quality, 240p, FLV, 400x240");
         fmt.put(17, "Low Quality, 144p, 3GP, 176x144");
         fmt.put(18, "Medium Quality, 360p, MP4, 480x360");
@@ -50,6 +58,8 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
     protected Void doInBackground(String... video) {
         BufferedReader br = null;
         HttpURLConnection c = null;
+        FileOutputStream fs = null;
+        InputStream is = null;
         try {
             URL url = new URL(video[0]);
             c = (HttpURLConnection) url.openConnection();
@@ -95,6 +105,15 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
                     choice.add(fmt.get(new Integer(f)));
                 }
             }
+            String id = video[0].substring(video[0].length() - 11);
+            url = new URL("http://img.youtube.com/vi/".concat(id.concat("/3.jpg")));
+            is = url.openStream();
+            bmap = BitmapFactory.decodeStream(is);
+            byte[] buffer = new byte[4096];
+            int size = 0;
+            while ((size = is.read(buffer)) > 0)
+                fs.write(buffer, 0, size);
+            fs.flush();
         } catch (MalformedURLException e) {
         } catch (IOException e) {
         } finally {
@@ -125,5 +144,6 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
         });
         adapter.notifyDataSetChanged();
         tv.setText(title);
+        iv.setImageBitmap(bmap);
     }
 }

@@ -10,13 +10,26 @@
     android:weightSum="1"
     android:id="@+id/linearLayout">
 
-    <TextView
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:id="@+id/titleView"
-        android:layout_weight="0.13"
-        android:textSize="20sp" />
+        android:weightSum="1">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/thumbsView"
+            android:layout_weight="0.36"
+            android:layout_marginRight="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/titleView"
+            android:textSize="20sp" />
+    </LinearLayout>
 
     <ListView
         android:layout_width="match_parent"

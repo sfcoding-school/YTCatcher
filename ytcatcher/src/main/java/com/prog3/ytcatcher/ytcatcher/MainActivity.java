@@ -6,6 +6,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -39,7 +40,7 @@ public class MainActivity extends ActionBarActivity {
                 int len = url.length();
                 String id = url.substring(len - 11, len);
                 setContentView(R.layout.choice_layout);
-                YTAsyncGet t = new YTAsyncGet(this, (TextView) findViewById(R.id.titleView), (ListView) findViewById(R.id.listView));
+                YTAsyncGet t = new YTAsyncGet(this, (TextView) findViewById(R.id.titleView), (ListView) findViewById(R.id.listView), (ImageView) findViewById(R.id.thumbsView));
                 t.execute("http://www.youtube.com/get_video_info?video_id=".concat(id));
             }
         } else {
