@@ -21,7 +21,7 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
 
     final private Context context;
     final private ProgressDialog pd;
-    boolean copyrighted, complete;
+    boolean copyrighted = false, complete = false;
 
     public YTAsyncDown(Context context) {
         this.context = context;
@@ -42,7 +42,12 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
         InputStream is = null;
         HttpURLConnection c = null;
         try {
-            int begin = video[0].indexOf("itag=");
+            int begin = video[0].indexOf("s=");
+            if (begin != -1) {
+                copyrighted = true;
+                return null;
+            }
+            begin = video[0].indexOf("itag=");
             int end = video[0].indexOf("&", begin + 5);
             if (end == -1)
                 end = video[0].length();
@@ -52,12 +57,6 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
             if (end == -1)
                 end = video[0].length();
             String result = URLDecoder.decode(video[0].substring(begin + 4, end), "UTF-8");
-            begin = video[0].indexOf("s=");
-            if (begin != -1) {
-                copyrighted = true;
-                throw new Exception();
-            } else
-                copyrighted = false;
             URL url = new URL(result);
             c = (HttpURLConnection) url.openConnection();
             c.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0");
@@ -98,7 +97,6 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
             title = title.replaceAll("\\?", "");
             title = title.replaceAll("\\*", "");
             title = title.concat(ext);
-            complete = false;
             fs = new FileOutputStream(new File(dir, title));
             is = c.getInputStream();
             byte[] buffer = new byte[4096];
@@ -114,7 +112,6 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(dir, title))));
         } catch (MalformedURLException e) {
         } catch (IOException e) {
-        } catch (Exception e) {
         } finally {
             try {
                 if (is != null)
