@@ -28,20 +28,18 @@ public class MainActivity extends ActionBarActivity {
         super.onStart();
         ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
-        if (ni != null && ni.isConnected()) {
+        if (ni != null && ni.isConnected() && ni.isAvailable()) {
             ClipData clip = cbm.getPrimaryClip();
-            String url = "";
             if (clip != null) {
                 ClipData.Item it = clip.getItemAt(0);
-                url = it.coerceToText(this).toString();
-            }
-            Pattern pt = Pattern.compile("(http://|https://)?(www\\.)?(((m\\.)?youtube\\.com/watch\\?v=)|youtu\\.be/)[\\w\\-]{11}");
-            if (pt.matcher(url).matches()) {
-                int len = url.length();
-                String id = url.substring(len - 11, len);
-                setContentView(R.layout.choice_layout);
-                YTAsyncGet t = new YTAsyncGet(this, (TextView) findViewById(R.id.titleView), (ListView) findViewById(R.id.listView), (ImageView) findViewById(R.id.thumbsView));
-                t.execute("http://www.youtube.com/get_video_info?video_id=".concat(id));
+                String url = it.coerceToText(this).toString();
+                Pattern pt = Pattern.compile("(http://|https://)?(www\\.)?(((m\\.)?youtube\\.com/watch\\?v=)|youtu\\.be/)[\\w\\-]{11}");
+                if (pt.matcher(url).matches()) {
+                    String id = url.substring(url.length() - 11);
+                    setContentView(R.layout.choice_layout);
+                    YTAsyncGet t = new YTAsyncGet(this, (TextView) findViewById(R.id.titleView), (ListView) findViewById(R.id.listView), (ImageView) findViewById(R.id.thumbsView));
+                    t.execute("http://www.youtube.com/get_video_info?video_id=".concat(id));
+                }
             }
         } else {
             TextView tv = (TextView) findViewById(R.id.errorView);

@@ -8,7 +8,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:weightSum="1"
-    android:id="@+id/linearLayout">
+    android:id="@+id/"
+    android:focusableInTouchMode="true">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -24,7 +25,7 @@
             android:layout_marginRight="10dp" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/titleView"
@@ -33,9 +34,10 @@
 
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:id="@+id/listView"
-        android:layout_weight="0.69"
-        android:clickable="false" />
+        android:layout_weight="0.87"
+        android:clickable="false"
+        android:layout_marginTop="5dp" />
 
 </LinearLayout>

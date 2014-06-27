@@ -12,9 +12,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -33,6 +31,7 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
     final private ImageView iv;
     final private Map<Integer, String> fmt = new HashMap<Integer, String>();
     private String title, obj;
+    private ArrayList<String> tags;
     private ArrayList<String> choice;
     private Bitmap bmap;
 
@@ -58,8 +57,6 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
     protected Void doInBackground(String... video) {
         BufferedReader br = null;
         HttpURLConnection c = null;
-        FileOutputStream fs = null;
-        InputStream is = null;
         try {
             URL url = new URL(video[0]);
             c = (HttpURLConnection) url.openConnection();
@@ -85,13 +82,13 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
             obj = obj.replaceAll("\\\\u0026", "&");
             begin = 0;
             end = obj.indexOf(",");
-            ArrayList<String> tags = new ArrayList<String>();
+            tags = new ArrayList<String>();
             while (end != -1) {
                 tags.add(obj.substring(begin, end));
                 begin = end + 1;
                 end = obj.indexOf(",", begin);
             }
-            tags.add(obj.substring(begin, obj.length()));
+            tags.add(obj.substring(begin));
             Iterator<String> it = tags.iterator();
             choice = new ArrayList<String>();
             while (it.hasNext()) {
@@ -107,13 +104,7 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
             }
             String id = video[0].substring(video[0].length() - 11);
             url = new URL("http://img.youtube.com/vi/".concat(id.concat("/3.jpg")));
-            is = url.openStream();
-            bmap = BitmapFactory.decodeStream(is);
-            byte[] buffer = new byte[4096];
-            int size = 0;
-            while ((size = is.read(buffer)) > 0)
-                fs.write(buffer, 0, size);
-            fs.flush();
+            bmap = BitmapFactory.decodeStream(url.openStream());
         } catch (MalformedURLException e) {
         } catch (IOException e) {
         } finally {
@@ -139,7 +130,7 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
             public void onItemClick(AdapterView<?> adapter, View v, int pos, long id) {
                 YTAsyncDown t = new YTAsyncDown(context);
                 TextView temp = (TextView) v;
-                t.execute(obj, temp.getText().toString(), title);
+                t.execute(tags.get(pos), title);
             }
         });
         adapter.notifyDataSetChanged();

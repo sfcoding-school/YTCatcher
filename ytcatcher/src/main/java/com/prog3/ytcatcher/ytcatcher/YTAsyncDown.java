@@ -16,32 +16,16 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 public class YTAsyncDown extends AsyncTask<String, String, Void> {
 
     final private Context context;
     final private ProgressDialog pd;
-    final private Map<String, Integer> fmt = new HashMap<String, Integer>();
     boolean copyrighted, complete;
 
     public YTAsyncDown(Context context) {
         this.context = context;
         pd = new ProgressDialog(context);
-        fmt.put("Low Quality, 240p, FLV, 400x240", 5);
-        fmt.put("Low Quality, 144p, 3GP, 176x144", 17);
-        fmt.put("Medium Quality, 360p, MP4, 480x360", 18);
-        fmt.put("High Quality, 720p, MP4, 1280x720", 22);
-        fmt.put("Low Quality, 240p, 3GP, 400x240", 36);
-        fmt.put("Medium Quality, 360p, WebM, 640x360", 43);
-        fmt.put("Medium Quality 3D, 360p, MP4, 640x360", 82);
-        fmt.put("Low Quality 3D, 240p, MP4, 400x240", 83);
-        fmt.put("High Quality 3D, 720p, MP4, 1280x720", 84);
-        fmt.put("High Quality 3D, 1080p, MP4, 1920x1080", 85);
-        fmt.put("Medium Quality 3D, 360p, WebM, 640x360", 100);
     }
 
     protected void onPreExecute() {
@@ -58,43 +42,22 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
         InputStream is = null;
         HttpURLConnection c = null;
         try {
-            int l = fmt.get(video[1]);
-            String obj = video[0];
-            int begin = 0;
-            int end = obj.indexOf(",");
-            ArrayList<String> tags = new ArrayList<String>();
-            while (end != -1) {
-                tags.add(obj.substring(begin, end));
-                begin = end + 1;
-                end = obj.indexOf(",", begin);
-            }
-            tags.add(obj.substring(begin, obj.length()));
-            Iterator<String> it = tags.iterator();
-            String result = "";
-            while (it.hasNext()) {
-                String temp = it.next();
-                begin = temp.indexOf("itag=");
-                if (begin != -1) {
-                    end = temp.indexOf("&", begin + 5);
-                    if (end == -1)
-                        end = temp.length();
-                    int f = Integer.parseInt(temp.substring(begin + 5, end));
-                    if (f == l) {
-                        begin = temp.indexOf("url=");
-                        end = temp.indexOf("&", begin + 4);
-                        if (end == -1)
-                            end = temp.length();
-                        result = URLDecoder.decode(temp.substring(begin + 4, end), "UTF-8");
-                        begin = temp.indexOf("s=");
-                        if (begin != -1) {
-                            copyrighted = true;
-                            throw new Exception();
-                        } else
-                            copyrighted = false;
-                        break;
-                    }
-                }
-            }
+            int begin = video[0].indexOf("itag=");
+            int end = video[0].indexOf("&", begin + 5);
+            if (end == -1)
+                end = video[0].length();
+            int l = Integer.parseInt(video[0].substring(begin + 5, end));
+            begin = video[0].indexOf("url=");
+            end = video[0].indexOf("&", begin + 4);
+            if (end == -1)
+                end = video[0].length();
+            String result = URLDecoder.decode(video[0].substring(begin + 4, end), "UTF-8");
+            begin = video[0].indexOf("s=");
+            if (begin != -1) {
+                copyrighted = true;
+                throw new Exception();
+            } else
+                copyrighted = false;
             URL url = new URL(result);
             c = (HttpURLConnection) url.openConnection();
             c.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0");
@@ -125,7 +88,7 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
             File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "YTCatcher");
             if (!dir.exists())
                 dir.mkdirs();
-            String title = video[2].replaceAll("\"", "");
+            String title = video[1].replaceAll("\"", "");
             title = title.replaceAll("<", "");
             title = title.replaceAll(">", "");
             title = title.replaceAll(":", "");
@@ -139,7 +102,7 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
             fs = new FileOutputStream(new File(dir, title));
             is = c.getInputStream();
             byte[] buffer = new byte[4096];
-            int size = 0;
+            int size;
             int downloaded = 0;
             while ((size = is.read(buffer)) > 0) {
                 fs.write(buffer, 0, size);
@@ -174,10 +137,10 @@ public class YTAsyncDown extends AsyncTask<String, String, Void> {
     protected void onPostExecute(Void args) {
         pd.dismiss();
         if (copyrighted)
-            Toast.makeText(context, context.getString(R.string.copyright), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, context.getString(R.string.copyright), Toast.LENGTH_SHORT).show();
         else if (complete)
-            Toast.makeText(context, context.getString(R.string.success), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, context.getString(R.string.success), Toast.LENGTH_SHORT).show();
         else
-            Toast.makeText(context, context.getString(R.string.unsuccess), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, context.getString(R.string.unsuccess), Toast.LENGTH_SHORT).show();
     }
 }
