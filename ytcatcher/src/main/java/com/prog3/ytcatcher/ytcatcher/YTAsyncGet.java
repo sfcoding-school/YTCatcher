@@ -30,7 +30,7 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
     final private ListView lv;
     final private ImageView iv;
     final private Map<Integer, String> fmt = new HashMap<Integer, String>();
-    private String title, obj;
+    private String title;
     private ArrayList<String> tags;
     private ArrayList<String> choice;
     private Bitmap bmap;
@@ -78,7 +78,7 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
             end = line.indexOf("&", begin + 27);
             if (end == -1)
                 end = line.indexOf("\"", begin + 27);
-            obj = URLDecoder.decode(line.substring(begin + 27, end), "UTF-8");
+            String obj = URLDecoder.decode(line.substring(begin + 27, end), "UTF-8");
             obj = obj.replaceAll("\\\\u0026", "&");
             begin = 0;
             end = obj.indexOf(",");
@@ -129,7 +129,6 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> adapter, View v, int pos, long id) {
                 YTAsyncDown t = new YTAsyncDown(context);
-                TextView temp = (TextView) v;
                 t.execute(tags.get(pos), title);
             }
         });

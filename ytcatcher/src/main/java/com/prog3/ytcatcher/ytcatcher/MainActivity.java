@@ -21,7 +21,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.error_layout);
-        cbm = (ClipboardManager) getSystemService(this.CLIPBOARD_SERVICE);
+        cbm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
     }
 
     protected void onStart() {
