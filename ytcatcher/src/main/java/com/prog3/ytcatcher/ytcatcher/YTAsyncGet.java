@@ -20,7 +20,6 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class YTAsyncGet extends AsyncTask<String, Void, Void> {
@@ -89,10 +88,8 @@ public class YTAsyncGet extends AsyncTask<String, Void, Void> {
                 end = obj.indexOf(",", begin);
             }
             tags.add(obj.substring(begin));
-            Iterator<String> it = tags.iterator();
             choice = new ArrayList<String>();
-            while (it.hasNext()) {
-                String temp = it.next();
+            for (String temp : tags) {
                 begin = temp.indexOf("itag=");
                 if (begin != -1) {
                     end = temp.indexOf("&", begin + 5);
