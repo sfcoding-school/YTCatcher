@@ -20,7 +20,6 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.error_layout);
         cbm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
     }
 
@@ -40,8 +39,10 @@ public class MainActivity extends ActionBarActivity {
                     YTAsyncGet t = new YTAsyncGet(this, (TextView) findViewById(R.id.titleView), (ListView) findViewById(R.id.listView), (ImageView) findViewById(R.id.thumbsView));
                     t.execute("http://www.youtube.com/get_video_info?video_id=".concat(id));
                 }
-            }
+            } else
+                setContentView(R.layout.error_layout);
         } else {
+            setContentView(R.layout.error_layout);
             TextView tv = (TextView) findViewById(R.id.errorView);
             tv.setText(getString(R.string.net_error));
         }
