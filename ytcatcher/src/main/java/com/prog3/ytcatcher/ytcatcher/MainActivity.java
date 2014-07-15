@@ -38,9 +38,9 @@ public class MainActivity extends ActionBarActivity {
                     setContentView(R.layout.choice_layout);
                     YTAsyncGet t = new YTAsyncGet(this, (TextView) findViewById(R.id.titleView), (ListView) findViewById(R.id.listView), (ImageView) findViewById(R.id.thumbsView));
                     t.execute("http://www.youtube.com/get_video_info?video_id=".concat(id));
-                }
-            } else
-                setContentView(R.layout.error_layout);
+                } else
+                    setContentView(R.layout.error_layout);
+            }
         } else {
             setContentView(R.layout.error_layout);
             TextView tv = (TextView) findViewById(R.id.errorView);
